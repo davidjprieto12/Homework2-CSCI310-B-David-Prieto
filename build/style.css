@@ -2,6 +2,20 @@ h1 {
     text-align: center;
 }
 
+.difficulty-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    gap: 40px;
+}
+
+.difficulty-button {
+    appearance: none;
+    background: none;
+    font-size: 14px;
+}
+
 #game-board {
     display: flex;
     align-items: center;

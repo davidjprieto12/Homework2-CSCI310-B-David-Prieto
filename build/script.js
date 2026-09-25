@@ -1,11 +1,24 @@
-import { WORDS } from "./words.js"
+// TODO: Obtain either categorical 5 word lists, or 4 and 6 word lists
+// TODO: Implement usage of buttons to alter lists
+
+// TODO: Add timer label and button
+// TODO: Add timer logic and execution
+
+import { FOUR_LETTER_WORDS } from "./fourLetterWords.js"
+import { FIVE_LETTER_WORDS } from "./fiveLetterWords.js"
+import { SIX_LETTER_WORDS } from "./sixLetterWords.js"
 
 // Initialize global constants and variables
 const NUMBER_OF_GUESSES = 6;
+
+
+// TODO: Place this in an initialize() / related helper method that has a parameter / condition related to the word list
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
-let rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
+
+// TODO: Relate the button presses to the generation of rightGuessString. 
+let rightGuessString = FIVE_LETTER_WORDS[Math.floor(Math.random() * FIVE_LETTER_WORDS.length)]
 console.log(rightGuessString)
 
 // Animation constant
@@ -125,7 +138,8 @@ function checkGuess () {
         return
     }
 
-    if (!WORDS.includes(guessString)) {
+    // TODO: Remove hard coding here
+    if (!FIVE_LETTER_WORDS.includes(guessString)) {
         toastr.error("Word not in list!")
         return
     }

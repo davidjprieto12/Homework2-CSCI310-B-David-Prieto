@@ -1,4 +1,4 @@
-export const WORDS = [
+export const FIVE_LETTER_WORDS = [
     'which',
     'there',
     'their',
