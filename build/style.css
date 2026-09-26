@@ -12,8 +12,31 @@ h1 {
 
 .difficulty-button {
     appearance: none;
-    background: none;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
     font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.difficulty-button:hover {
+    opacity: 0.85;
+}
+
+#easy-button {
+    background-color: #6aaa64;
+}
+
+#normal-button {
+    background-color: #c9b458;
+}
+
+#hard-button {
+    background-color: #d3455b;
 }
 
 #game-board {

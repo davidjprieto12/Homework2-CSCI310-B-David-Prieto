@@ -1,8 +1,7 @@
-// TODO: Obtain either categorical 5 word lists, or 4 and 6 word lists
-// TODO: Implement usage of buttons to alter lists
-
 // TODO: Add timer label and button
 // TODO: Add timer logic and execution
+
+// TODO: Clear shading on reset
 
 import { FOUR_LETTER_WORDS } from "./fourLetterWords.js"
 import { FIVE_LETTER_WORDS } from "./fiveLetterWords.js"
@@ -11,15 +10,20 @@ import { SIX_LETTER_WORDS } from "./sixLetterWords.js"
 // Initialize global constants and variables
 const NUMBER_OF_GUESSES = 6;
 
+// Difficulty buttons (used for event listeners -> functions)
+const easyButton = document.getElementById("easy-button");
+const normalButton = document.getElementById("normal-button");
+const hardButton = document.getElementById("hard-button");
 
-// TODO: Place this in an initialize() / related helper method that has a parameter / condition related to the word list
+// This code is repeated in the resetBoard() function
+// Here, global variables are initialized and set
+// In resetBoard(), these variables are reset without being redeclared
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
-
-// TODO: Relate the button presses to the generation of rightGuessString. 
-let rightGuessString = FIVE_LETTER_WORDS[Math.floor(Math.random() * FIVE_LETTER_WORDS.length)]
-console.log(rightGuessString)
+let currentWordList = FIVE_LETTER_WORDS;
+let rightGuessString = currentWordList[Math.floor(Math.random() * currentWordList.length)];
+console.log(rightGuessString);
 
 // Animation constant
 const animateCSS = (element, animation, prefix = 'animate__') =>
@@ -83,14 +87,31 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
     document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
 })
 
+// Difficulty button event listeners & method calls
+easyButton.addEventListener("click", () => {
+    resetBoard(FOUR_LETTER_WORDS);
+})
+normalButton.addEventListener("click", () => {
+    resetBoard(FIVE_LETTER_WORDS);
+})
+hardButton.addEventListener("click", () => {
+    resetBoard(SIX_LETTER_WORDS);
+})
+
+// This is to counteract a bug where pressing a button keeps it highlighted, so hitting "enter" would call the button again
+document.querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("mousedown", (e) => e.preventDefault());
+});
+
 function initBoard() {
     let board = document.getElementById("game-board");
+    board.replaceChildren();
 
     for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
         let row = document.createElement("div")
         row.className = "letter-row"
 
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < currentWordList[0].length; j++) {
             let box = document.createElement("div")
             box.className = "letter-box"
             row.appendChild(box)
@@ -100,8 +121,21 @@ function initBoard() {
     
 }
 
+// Resets the originally defined variables to reset the game (for difficulty buttons / restart functionality)
+function resetBoard(wordList) {
+    guessesRemaining = NUMBER_OF_GUESSES;
+    currentGuess = [];
+    nextLetter = 0;
+    currentWordList = wordList;
+    rightGuessString = currentWordList[Math.floor(Math.random() * currentWordList.length)];
+    console.log(rightGuessString);
+
+    resetKeyboard();
+    initBoard();
+}
+
 function insertLetter (pressedKey) {
-    if (nextLetter === 5) {
+    if (nextLetter === currentWordList[0].length) {
         return
     }
     pressedKey = pressedKey.toLowerCase()
@@ -133,18 +167,17 @@ function checkGuess () {
         guessString += val
     }
 
-    if (guessString.length != 5) {
+    if (guessString.length != currentWordList[0].length) {
         toastr.error("Not enough letters!")
         return
     }
 
-    // TODO: Remove hard coding here
-    if (!FIVE_LETTER_WORDS.includes(guessString)) {
+    if (!currentWordList.includes(guessString)) {
         toastr.error("Word not in list!")
         return
     }
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < currentWordList[0].length; i++) {
         let letterColor = ''
         let box = row.children[i]
         let letter = currentGuess[i]
@@ -210,6 +243,12 @@ function shadeKeyBoard(letter, color) {
             elem.style.backgroundColor = color
             break
         }
+    }
+}
+
+function resetKeyboard() {
+    for (const elem of document.getElementsByClassName("keyboard-button")) {
+        elem.style.backgroundColor = ""
     }
 }
 
