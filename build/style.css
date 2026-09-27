@@ -2,15 +2,21 @@ h1 {
     text-align: center;
 }
 
-.difficulty-button-container {
+h2 {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.centered-button-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px;
+    margin: 25px;
     gap: 40px;
 }
 
-.difficulty-button {
+.styled-button {
     appearance: none;
     border: none;
     border-radius: 8px;
@@ -23,8 +29,12 @@ h1 {
     transition: opacity 0.15s ease;
 }
 
-.difficulty-button:hover {
+.styled-button:hover {
     opacity: 0.85;
+}
+
+#timer-button {
+    background-color: #3d8fb0;
 }
 
 #easy-button {

@@ -1,8 +1,3 @@
-// TODO: Add timer label and button
-// TODO: Add timer logic and execution
-
-// TODO: Clear shading on reset
-
 import { FOUR_LETTER_WORDS } from "./fourLetterWords.js"
 import { FIVE_LETTER_WORDS } from "./fiveLetterWords.js"
 import { SIX_LETTER_WORDS } from "./sixLetterWords.js"
@@ -10,10 +5,16 @@ import { SIX_LETTER_WORDS } from "./sixLetterWords.js"
 // Initialize global constants and variables
 const NUMBER_OF_GUESSES = 6;
 
-// Difficulty buttons (used for event listeners -> functions)
+// Buttons (used for event listeners -> functions)
+const timerButton = document.getElementById("timer-button");
 const easyButton = document.getElementById("easy-button");
 const normalButton = document.getElementById("normal-button");
 const hardButton = document.getElementById("hard-button");
+
+// Timer variables (include in resetTimer())
+let timerOn = false;
+let timeRemaining = 60;
+let timerId = null;
 
 // This code is repeated in the resetBoard() function
 // Here, global variables are initialized and set
@@ -87,7 +88,12 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
     document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
 })
 
-// Difficulty button event listeners & method calls
+// Timer button event listener
+timerButton.addEventListener("click", () => {
+    startTimer();
+})
+
+// Difficulty button event listeners & method calls (each call resetBoard but pass different lists)
 easyButton.addEventListener("click", () => {
     resetBoard(FOUR_LETTER_WORDS);
 })
@@ -131,6 +137,7 @@ function resetBoard(wordList) {
     console.log(rightGuessString);
 
     resetKeyboard();
+    resetTimer();
     initBoard();
 }
 
@@ -193,9 +200,17 @@ function checkGuess () {
             if (currentGuess[i] === rightGuess[i]) {
                 // shade green
                 letterColor = 'green'
+
+                if (timerOn) {
+                    timeRemaining += 5;
+                }
             } else {
                 // shade yellow
                 letterColor = 'yellow'
+
+                if (timerOn) {
+                    timeRemaining += 3;
+                }
             }
 
             rightGuess[letterPosition] = "#"
@@ -214,6 +229,7 @@ function checkGuess () {
 
     if (guessString === rightGuessString) {
         toastr.success("You guessed right! Game over!")
+        toastr.info("To start a new game, pick a difficulty setting")
         guessesRemaining = 0
         return
     } else {
@@ -224,6 +240,7 @@ function checkGuess () {
         if (guessesRemaining === 0) {
             toastr.error("You've run out of guesses! Game over!")
             toastr.info(`The right word was: "${rightGuessString}"`)
+            toastr.info("To start a new game, pick a difficulty setting")
         }
     }
 }
@@ -246,10 +263,55 @@ function shadeKeyBoard(letter, color) {
     }
 }
 
+// Resets the keyboard shading upon starting a new game
 function resetKeyboard() {
     for (const elem of document.getElementsByClassName("keyboard-button")) {
         elem.style.backgroundColor = ""
     }
+}
+
+function startTimer() {
+    // Only begin the timer if a timer doesn't exist and if the game is ongoing
+    if (!timerOn && guessesRemaining != 0) {
+
+        console.log("Timer started!");
+        timerOn = true;
+
+        // Every second:
+        timerId = setInterval(() => {
+            // If the game has already ended, end the timer
+            if (guessesRemaining == 0) {
+                timerOn = false;
+                clearInterval(timerId);
+            }
+
+            // If the game has not ended yet:
+            // If there is still time left, display and decrement
+            if (timeRemaining > 0) {
+                timerButton.textContent = `Time Left: ${timeRemaining} s`;
+                timeRemaining--;
+            }
+            // If time is out, display time is up and end the timer and guesses
+            else {
+                timerButton.textContent = "Time is Up!";
+                toastr.error("Game over! To restart, pick a difficulty setting")
+                timerOn = false;
+                guessesRemaining = 0;
+                clearInterval(timerId); 
+            }
+        }, 1000);
+    }
+}
+
+// Resets the timer variables and clears the preexisting timer upon making a new board
+function resetTimer() {
+    if (timerId) {
+        clearInterval(timerId);
+    }
+
+    timerOn = false;
+    timeRemaining = 60;
+    timerButton.textContent = "Timed Mode";
 }
 
 initBoard()
